@@ -1,0 +1,257 @@
+-Run Code-
+
+COUT "Selamat Datang di Sistem Laundry"
+
+WHILE TRUE DO
+    COUT "Pilih Peran Anda:" endl;
+    COUT "1. Admin" endl;
+    COUT "2. Staff" endl;
+    COUT "3. Keluar" endl;
+    COUT "Masukkan pilihan Anda: "
+    CIN role
+
+    IF role = 3 THEN
+        COUT "Terima kasih telah menggunakan Smart Laundry!"
+        BREAK
+
+    IF role NOT IN [1, 2] THEN
+        COUT "Input tidak valid. Silakan pilih 1, 2, atau 3."
+        CONTINUE
+
+    IF role = 1 THEN
+        WHILE TRUE DO
+            COUT "Anda masuk sebagai Admin"
+            COUT "Pilih Menu: "
+            COUT "1. Manajemen Layanan"
+            COUT "2. Manajemen Pesanan"
+            COUT "3. Manajemen Proses"
+            COUT "4. Kembali ke Main Menu"
+            COUT "Masukkan pilihan Anda: "
+            CIN admin_menu
+
+            IF admin_menu = 4 THEN
+                BREAK
+
+            IF admin_menu NOT IN [1, 2, 3, 4] THEN
+                COUT "Input tidak valid. Silakan pilih 1, 2, 3, atau 4."
+                CONTINUE
+
+            IF admin_menu = 1 THEN
+                WHILE TRUE DO
+                    COUT "Manajemen Layanan"
+                    COUT "Pilih Aksi: "
+                    COUT "1. Tambah Layanan"
+                    COUT "2. Lihat Layanan"
+                    COUT "3. Ubah Layanan"
+                    COUT "4. Kembali ke Menu Admin"
+                    COUT "Masukkan pilihan Anda: "
+                    CIN layanan_action
+
+                    IF layanan_action = 4 THEN
+                        BREAK
+
+                    IF layanan_action NOT IN [1, 2, 3, 4] THEN
+                        COUT "Input tidak valid. Silakan pilih 1, 2, 3, atau 4."
+                        CONTINUE
+
+                    IF layanan_action = 1 THEN
+                        COUT "Tambah Layanan"
+                        GENERATE <kode_layanan> based on sequence (L001, L002, ...)
+                        COUT "Kode Layanan: " + <kode_layanan>
+                        INPUT nama_layanan, harga_per_kg, estimasi_waktu, status_layanan
+                        SAVE layanan to database
+                        COUT "Layanan berhasil ditambahkan."
+
+                    ELSE IF layanan_action = 2 THEN
+                        FETCH all layanan from database
+                        IF layanan IS EMPTY THEN
+                            COUT "Tidak ada layanan yang tersedia."
+                        ELSE
+                            DISPLAY layanan
+                        ENDIF
+
+                    ELSE IF layanan_action = 3 THEN
+                        COUT "Masukkan kode layanan yang ingin diubah: "
+                        CIN kode_layanan
+                        FETCH layanan by kode_layanan
+                        IF layanan NOT FOUND THEN
+                            COUT "Layanan dengan kode tersebut tidak ditemukan."
+                        ELSE
+                            INPUT updated values (nama_layanan, harga_per_kg, estimasi_waktu, status_layanan)
+                            UPDATE layanan in database
+                            COUT "Layanan berhasil diubah."
+                        ENDIF
+                    ENDIF
+                ENDWHILE
+            ELSE IF admin_menu = 2 THEN
+                WHILE TRUE DO
+                    COUT "Manajemen Pesanan"
+                    COUT "Pilih Aksi: "
+                    COUT "1. Tambah Pesanan"
+                    COUT "2. Lihat Pesanan"
+                    COUT "3. Kembali ke Menu Admin"
+                    COUT "Masukkan pilihan Anda: "
+                    CIN pesanan_action
+
+                    IF pesanan_action = 3 THEN
+                        BREAK
+
+                    IF pesanan_action NOT IN [1, 2, 3] THEN
+                        COUT "Input tidak valid. Silakan pilih 1, 2, atau 3."
+                        CONTINUE
+
+                    IF pesanan_action = 1 THEN
+                        COUT "Tambah Pesanan"
+                        GENERATE nomor_pesanan based on sequence (NP001, NP002, ...)
+                        COUT "Nomor Pesanan: " + nomor_pesanan
+                        INPUT tanggal_masuk, jenis_layanan, berat_cucian, jenis_pakaian, deadline, status_pesanan
+                        SAVE pesanan to database
+                        COUT "Pesanan berhasil ditambahkan."
+
+                    ELSE IF pesanan_action = 2 THEN
+                        COUT "Pilih Opsi: "
+                        COUT "1. Semua Pesanan"
+                        COUT "2. Pesanan per Status"
+                        CIN view_option
+
+                        IF view_option = 1 THEN
+                            FETCH all pesanan
+                            IF pesanan IS EMPTY THEN
+                                COUT "Tidak ada pesanan yang tersedia."
+                            ELSE
+                                DISPLAY pesanan
+                            ENDIF
+
+                        ELSE IF view_option = 2 THEN
+                            COUT "Masukkan status pesanan yang ingin dilihat: "
+                            CIN status
+                            FETCH pesanan by status
+                            IF pesanan IS EMPTY THEN
+                                COUT "Tidak ada pesanan dengan status tersebut."
+                            ELSE
+                                DISPLAY pesanan
+                            ENDIF
+                        ELSE
+                            COUT "Input tidak valid."
+                        ENDIF
+                    ENDIF
+                ENDWHILE
+            ELSE IF admin_menu = 3 THEN
+                WHILE TRUE DO
+                    COUT "Manajemen Proses"
+                    COUT "Masukkan nomor pesanan yang ingin diubah statusnya: "
+                    CIN nomor_pesanan
+                    FETCH pesanan by nomor_pesanan
+
+                    IF pesanan NOT FOUND THEN
+                        COUT "Pesanan dengan nomor tersebut tidak ditemukan."
+                    ELSE
+                        COUT "Pilih Status Baru: "
+                        COUT "1. Diterima"
+                        COUT "2. Sedang Dicuci"
+                        COUT "3. Sedang Disetrika"
+                        COUT "4. Selesai"
+                        COUT "5. Diambil"
+                        CIN new_status
+
+                        IF new_status NOT IN [1, 2, 3, 4, 5] THEN
+                            COUT "Input tidak valid."
+                        ELSE
+                            UPDATE pesanan status in database
+                            COUT "Status pesanan berhasil diubah."
+                        ENDIF
+                    ENDIF
+
+                    COUT "Apakah ingin mengubah status pesanan lain? (y/n): "
+                    CIN continue_process
+                    IF continue_process = 'n' THEN
+                        BREAK
+                    ENDIF
+                ENDWHILE
+            ENDIF
+        ENDWHILE
+    ELSE IF role = 2 THEN
+        WHILE TRUE DO
+            COUT "Anda masuk sebagai Staff"
+            COUT "Pilih Menu: "
+            COUT "1. Manajemen Pekerjaan"
+            COUT "2. Pencatatan Pesanan"
+            COUT "3. Kembali ke Main Menu"
+            CIN staff_menu
+
+            IF staff_menu = 3 THEN
+                BREAK
+
+            IF staff_menu NOT IN [1, 2, 3] THEN
+                COUT "Input tidak valid. Silakan pilih 1, 2, atau 3."
+                CONTINUE
+
+            IF staff_menu = 1 THEN
+                WHILE TRUE DO
+                    COUT "Manajemen Pekerjaan"
+                    COUT "Pilih Aksi: "
+                    COUT "1. Lihat Antrian Hari Ini"
+                    COUT "2. Lihat Detail Pesanan"
+                    COUT "3. Lihat Estimasi Penyelesaian"
+                    COUT "4. Kembali ke Menu Staff"
+                    CIN pekerjaan_action
+
+                    IF pekerjaan_action = 4 THEN
+                        BREAK
+
+                    IF pekerjaan_action = 1 THEN
+                        FETCH pesanan for today
+                        DISPLAY pesanan
+
+                    ELSE IF pekerjaan_action = 2 THEN
+                        CIN nomor_pesanan
+                        FETCH pesanan by nomor_pesanan
+                        DISPLAY pesanan details
+
+                    ELSE IF pekerjaan_action = 3 THEN
+                        FETCH all pesanan with completion time estimates
+                        DISPLAY estimates
+
+                    ELSE
+                        COUT "Input tidak valid."
+                    ENDIF
+                ENDWHILE
+            ELSE IF staff_menu = 2 THEN
+                WHILE TRUE DO
+                    COUT "Pencatatan Pesanan"
+                    COUT "Pilih Aksi: "
+                    COUT "1. Tambah Pesanan"
+                    COUT "2. Cetak Nota"
+                    COUT "3. Cari Pesanan"
+                    COUT "4. Kembali ke Menu Staff"
+                    CIN pencatatan_action
+
+                    IF pencatatan_action = 4 THEN
+                        BREAK
+
+                    IF pencatatan_action = 1 THEN
+                        INPUT jenis_layanan, berat_cucian, jenis_pakaian, deadline
+                        GENERATE nomor_pesanan based on sequence (NP001, NP002, ...)
+                        SAVE pesanan to database
+                        COUT "Pesanan berhasil dicatat."
+
+                    ELSE IF pencatatan_action = 2 THEN
+                        CIN nomor_pesanan
+                        FETCH pesanan by nomor_pesanan
+                        DISPLAY nota
+
+                    ELSE IF pencatatan_action = 3 THEN
+                        CIN nomor_pesanan
+                        FETCH pesanan by nomor_pesanan
+                        DISPLAY pesanan
+
+                    ELSE
+                        COUT "Input tidak valid."
+                    ENDIF
+                ENDWHILE
+            ENDIF
+        ENDWHILE
+    ENDIF
+ENDWHILE
+
+COUT "Sistem selesai."
