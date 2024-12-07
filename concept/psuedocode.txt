@@ -40,7 +40,7 @@ IF role = 1
             FETCH all layanan from database
             COUT layanan
 
-        ELSE layanan_action = 3 THEN
+        ELSE IF layanan_action = 3 THEN
             INPUT kode_layanan
             FETCH layanan by kode_layanan
             INPUT updated values (nama_layanan, harga_per_kg, estimasi_waktu, status_layanan)
