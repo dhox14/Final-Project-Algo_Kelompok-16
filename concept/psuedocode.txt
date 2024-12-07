@@ -1,0 +1,161 @@
+-Run Code-
+
+COUT "Selamat Datang di Sistem Laundry"
+COUT "Pilih Peran Anda:" endl; 
+ 1. Admin endl;
+ 2. Staff endl;
+CIN role = 1 atau 2
+
+IF role = 1
+    COUT "Anda masuk sebagai Admin"
+    COUT "Pilih Menu: "
+    COUT "1. Manajemen Layanan"
+    COUT "2. Manajemen Pesanan"
+    COUT "3. Manajemen Proses"
+    CIN admin_menu 1 atau 2 atau 3
+
+    IF admin_menu = 1 THEN
+        COUT "Manajemen Layanan"
+        COUT "Pilih Aksi: "
+        COUT "1. Tambah Layanan"
+        COUT "2. Lihat Layanan"
+        COUT "3. Ubah Layanan"
+        CIN layanan_action : 1 atau 2 atau 3
+
+        IF layanan_action = 1 THEN
+        layanan ->
+            GENERATE <kode_layanan> berdasarkan urutan start from L001 
+            COUT "<kode_layanan>"
+            COUT "Nama Layanan : "
+            CIN nama_layanan;
+            COUT "Harga per KG : "
+            CIN harga_per_kg;
+            COUT "Estimasi Waktu Pengerjaan : "
+            CIN estimasi_waktu;
+            COUT "Status Layanan : "
+            CIN status_layanan;
+        SAVE layanan to database 
+        
+        ELSE IF layanan_action = 2 THEN
+            FETCH all layanan from database
+            COUT layanan
+
+        ELSE layanan_action = 3 THEN
+            INPUT kode_layanan
+            FETCH layanan by kode_layanan
+            INPUT updated values (nama_layanan, harga_per_kg, estimasi_waktu, status_layanan)
+            UPDATE layanan in database
+        ENDIF
+
+    ELSE IF admin_menu = 2 THEN
+        COUT "Manajemen Pesanan"
+        COUT "Pilih Aksi: "
+        COUT "1. Tambah Pesanan"
+        COUT "2. Lihat Pesanan"
+        CIN pesanan_action 1 atau 2
+
+        IF pesanan_action = 1 THEN
+            GENERATE nomor_pesanan berdasarkan urutan start from NP001
+            COUT nomor_pesanan
+            COUT "Masukkan tanggal masuk : "
+            CIN tanggal_masuk
+            COUT "Pilih Jenis Layanan"
+            CIN jenis_layanan
+            COUT "Masukkan Berat Cucian : "
+            CIN berat_cucian
+            COUT "Masukkan Jenis Pakaian : "                -> Berdasarkan bahan
+            CIN jenis_pakaian
+            COUT "Masukkan Deadline : "
+            CIN deadline
+            COUT Masukkan Status Pesanan
+            CIN status_pesanan
+            SAVE pesanan to database
+        ELSE IF pesanan_action = 2 THEN
+            COUT "Pilih Opsi: "
+            COUT "1. Semua Pesanan"
+            COUT "2. Pesanan per Status"
+            CIN view_option 1 atau 2
+
+            IF view_option = 1 THEN
+                FETCH all pesanan
+                DISPLAY pesanan
+            ELSE IF view_option = 2 THEN
+                CIN status
+                FETCH pesanan by status
+                COUT pesanan
+            ENDIF
+        ENDIF
+
+    ELSE IF admin_menu = 3 THEN
+        COUT "Manajemen Proses"
+        COUT "Pilih Pesanan untuk Ubah Status"
+        CIN nomor_pesanan
+        FETCH pesanan by nomor_pesanan
+        COUT "Pilih Status Baru: "
+        COUT "1. Diterima"
+        COUT "2. Sedang Dicuci"
+        COUT "3. Sedang Disetrika"
+        COUT "4. Selesai"
+        COUT "5. Diambil"
+        CIN new_status
+        UPDATE pesanan status in database
+    ENDIF
+ELSE IF role = 2 THEN
+    COUT "Anda masuk sebagai Staff"
+    COUT "Pilih Menu: "
+    COUT "1. Manajemen Pekerjaan"
+    COUT "2. Pencatatan Pesanan"
+    CIN staff_menu
+
+    IF staff_menu = 1 THEN
+        COUT "Manajemen Pekerjaan"
+        COUT "Pilih Aksi: "
+        COUT "1. Lihat Antrian Hari Ini"
+        COUT "2. Lihat Detail Pesanan"
+        COUT "3. Lihat Estimasi Penyelesaian"
+        CIN pekerjaan_action
+
+        IF pekerjaan_action = 1 THEN
+            FETCH pesanan for today                                 -> add function for date  
+            COUT pesanan
+        ELSE IF pekerjaan_action = 2 THEN
+            CIN nomor_pesanan
+            FETCH pesanan by nomor_pesanan
+            COUT pesanan details
+        ELSE IF pekerjaan_action = 3 THEN
+            FETCH all pesanan with completion time estimates
+            COUT estimates
+        ENDIF
+    ELSE IF staff_menu = 2 THEN
+        COUT "Pencatatan Pesanan"
+        COUT "Pilih Aksi: "
+        COUT "1. Tambah Pesanan"
+        COUT "2. Cetak Nota"
+        COUT "3. Cari Pesanan"
+        CIN pencatatan_action 1 atau 2 atau 3
+
+        IF pencatatan_action = 1 THEN
+            COUT "Jenis Layanan : "
+            CIN jenis_layanan
+            COUT "Berat Cucian : " 
+            CIN berat_cucian
+            COUT "Jenis Pakaian : "                     -> Berdasarkan bahan
+            CIN jenis_pakaian
+            COUT "Masukkan Deadline : "
+            CIN deadline
+            GENERATE nomor_pesanan berdasarkan urutan start from NP001
+            SAVE pesanan to database
+        ELSE IF pencatatan_action = 2 THEN
+            CIN nomor_pesanan
+            FETCH pesanan by nomor_pesanan
+            COUT nota                                   -> Buat Format nota dulu
+        ELSE IF pencatatan_action = 3 THEN
+            CIN nomor_pesanan
+            FETCH pesanan by nomor_pesanan
+            COUT pesanan dengan <nomor_pesanan>
+        ENDIF
+    ENDIF
+ENDIF
+
+COUT "Terima kasih telah menggunakan Smart Laundry"
+END
