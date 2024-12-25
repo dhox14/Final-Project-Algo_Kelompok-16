@@ -656,15 +656,16 @@ void cetakNota(){
         cout << "================================" << endl;
         return;
     }
-
+    if (status_pesanan[index] == "Selesai"){
     // Tampilkan informasi nota
-    cout << "================================" << endl;
-    cout << "Nota Pesanan" << endl;
-    cout << "================================" << endl;
-    cout << "Kode Pesanan      : " << kode_pesanan[index] << endl;
-    cout << "Tanggal Masuk     : " << tanggal_masuk[index] << endl;
-    cout << "Jenis Layanan     : " << jenis_layanan[index] << endl;
-    cout << "Berat Cucian      : " << berat_cucian[index] << " kg" << endl;
+        cout << "================================" << endl;
+        cout << "Nota Pesanan" << endl;
+        cout << "================================" << endl;
+        cout << "Kode Pesanan      : " << kode_pesanan[index] << endl;
+        cout << "Tanggal Masuk     : " << tanggal_masuk[index] << endl;
+        cout << "Jenis Layanan     : " << jenis_layanan[index] << endl;
+        cout << "Berat Cucian      : " << berat_cucian[index] << " kg" << endl;
+    
 
     // Cari harga per kg berdasarkan jenis layanan
     for (int i = 0; i < hitung_layanan; i++) {
@@ -675,6 +676,15 @@ void cetakNota(){
         }
     }
     cout << "================================" << endl;
+    }
+    else if (status_pesanan[index] == "Diambil"){
+        cout << "Pesanan sudah diambil" << endl;
+        cout << "================================" << endl;
+    }
+    else{
+        cout << "Pesanan belum siap" << endl;
+        cout << "================================" << endl;
+    }
     
 }
 
