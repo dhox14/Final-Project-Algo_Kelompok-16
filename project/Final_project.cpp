@@ -37,9 +37,39 @@ void tambahLayanan(){
     kode_layanan[hitung_layanan] = kode;
 
     cout << "Kode Layanan: " << kode << endl; // Tampilkan kode yang dihasilkan
-    cout << "Nama Layanan: ";
-    cin.ignore();
-    getline(cin,nama_layanan[hitung_layanan]);
+    
+    // Validasi Nama Layanan agar tidak bisa hanya input spasi/input kosong 
+    string nama;
+    bool validInput = false;
+    
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear input buffer once before the loop
+    
+    while (!validInput) {
+        cout << "Nama Layanan: ";
+        getline(cin, nama);
+        
+        // Check if input is empty or contains only spaces
+        bool isOnlySpaces = true;
+        for (size_t i = 0; i < nama.length(); ++i) {
+            if (!isspace(nama[i])) {
+                isOnlySpaces = false;
+                break;
+            }
+        }
+        
+        if (nama.empty() || isOnlySpaces) {
+            cout << "Masukkan input yang valid" << endl;
+        } else {
+            validInput = true;
+            nama_layanan[hitung_layanan] = nama;
+        }
+    }
+    
+    //code sebelum diubah
+    //cout << "Nama Layanan: ";
+    //cin.ignore();
+    //getline(cin,nama_layanan[hitung_layanan]);    
+
     cout << "Harga per kg: ";
     cin >> harga_layanan[hitung_layanan];
     cout << "Estimasi Waktu Pengerjaan (hari): ";
