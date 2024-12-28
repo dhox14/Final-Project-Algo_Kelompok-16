@@ -161,7 +161,7 @@ void ubahLayanan(){
                 cout << "Harga layanan berhasil diubah!" << endl;
                 break;
             case 3:
-                cout << "Masukkan estimasi waktu pengerjaan baru (hari): ";
+                cout << "Masukkan estimasi waktu pengerjaan baru (jam): ";
                 cin >> estimasi_layanan[index];
                 cout << "Estimasi waktu berhasil diubah!" << endl;
                 break;
@@ -502,73 +502,46 @@ void ubahStatusPesanan(){
          << ", Status Pesanan: " << status_pesanan[index] << endl;
     cout << "--------------------------------" << endl;
 
-    // Validasi pengurutan status pesanan
-    string current_status = status_pesanan[index];
-    
-    if (current_status == "Diambil") {
-        cout << "Pesanan sudah diambil dan tidak dapat dilakukan perubahan." << endl;
-        cout << "================================" << endl;
-        return;
+    // Menu ubah layanan
+    while (true) {
+        cout << "Perubahan Status Pesanan: " << endl;
+        cout << "1. Diterima" << endl;
+        cout << "2. Dikerjakan" << endl;
+        cout << "3. Selesai" << endl;
+        cout << "4. Diambil" << endl;
+        cout << "Pilih opsi: ";
+        int opsi;
+        cin >> opsi;
+        cout << "--------------------------------" << endl;
+
+        switch (opsi) {
+            case 1:
+                status_pesanan[index] = "Diterima";
+                cout << "Status pesanan berhasil diubah menjadi 'Diterima'!" << endl;
+                cout << "================================" << endl;
+                return;
+            case 2:
+                status_pesanan[index] = "Dikerjakan";
+                cout << "Status pesanan berhasil diubah menjadi 'Dikerjakan'!" << endl;
+                cout << "================================" << endl;
+                return;
+            case 3:
+                status_pesanan[index] = "Selesai";
+                cout << "Status pesanan berhasil diubah menjadi 'Selesai'!" << endl;
+                cout << "================================" << endl;
+                return;
+            case 4:
+                status_pesanan[index] = "Diambil";
+                cout << "Status pesanan berhasil diubah 'Diambil'!" << endl;
+                cout << "================================" << endl;
+                return;
+            default:
+                cout << "Opsi tidak valid!" << endl;
+                cout << "--------------------------------" << endl;
+                break;
+        }
     }
 
-    int opsi;
-    cout << "Perbarui Status Pesanan: " << endl;
-    
-    switch(current_status[0]) {  // Using first character for switch
-        case 'D':  // "Diterima"
-            if (current_status == "Diterima") {
-                cout << "2. Dikerjakan" << endl;
-                cout << "Pilih opsi: ";
-                cin >> opsi;
-                cout << "--------------------------------" << endl;
-                
-                switch(opsi) {
-                    case 2:
-                        status_pesanan[index] = "Dikerjakan";
-                        cout << "Status pesanan berhasil diperbarui menjadi 'Dikerjakan'!" << endl;
-                        break;
-                    default:
-                        cout << "Opsi tidak valid! Status hanya dapat diubah ke 'Dikerjakan'." << endl;
-                }
-            }
-            else {  // "Dikerjakan"
-                cout << "3. Selesai" << endl;
-                cout << "Pilih opsi: ";
-                cin >> opsi;
-                cout << "--------------------------------" << endl;
-                
-                switch(opsi) {
-                    case 3:
-                        status_pesanan[index] = "Selesai";
-                        cout << "Status pesanan berhasil diperbarui menjadi 'Selesai'!" << endl;
-                        break;
-                    default:
-                        cout << "Opsi tidak valid! Status hanya dapat diubah ke 'Selesai'." << endl;
-                }
-            }
-            break;
-            
-        case 'S':  // "Selesai"
-            cout << "4. Diambil" << endl;
-            cout << "Pilih opsi: ";
-            cin >> opsi;
-            cout << "--------------------------------" << endl;
-            
-            switch(opsi) {
-                case 4:
-                    status_pesanan[index] = "Diambil";
-                    cout << "Status pesanan berhasil diperbarui menjadi 'Diambil'!" << endl;
-                    break;
-                default:
-                    cout << "Opsi tidak valid! Status hanya dapat diubah ke 'Diambil'." << endl;
-            }
-            break;
-            
-        default:
-            cout << "Status tidak valid!" << endl;
-    }
-    
-    cout << "================================" << endl;
 }
 
 //menu ketika memilih Manajemen Proses pada Menu Admin
