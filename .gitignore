@@ -2,3 +2,5 @@ build
 build/*
 
 build_emscripten
+
+.DS_Store
