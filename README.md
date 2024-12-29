@@ -2,6 +2,7 @@
 
 ## 📘 Table of Contents
 
+- [Build This Project](#introduction)
 - [Introduction](#introduction)
 - [Setup](#setup)
 - [Basic Concepts](#basic-concepts)
@@ -9,6 +10,22 @@
 - [Workflow](#workflow)
 - [Best Practices](#best-practices)
 - [Learning Resources](#learning-resources)
+
+## 🔥 Installation
+
+#### Build
+
+```bash
+# Build this projcet
+g++ -o release/release project/Final_project.cpp project/utility/source/*.cpp
+```
+
+#### Running
+
+```bash
+# Run this projcet
+./release/release
+```
 
 ## 🌟 Introduction
 
