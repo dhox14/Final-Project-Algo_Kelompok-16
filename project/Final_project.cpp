@@ -642,12 +642,12 @@ void hitungPendapatanPerHari() {
     double pendapatan = 0;
     bool pesananDitemukan = false;
 
-    // Iterate through all orders
+    // Iterasi seluruh pesanan
     for (int i = 0; i < hitung_pesanan; i++) {
         if (tanggal_masuk[i] == tanggal && 
             (status_pesanan[i] == "Selesai" || status_pesanan[i] == "Diambil")) {
             
-            // Find the service price for this order
+            // Menemukan harga layanan pada pesananan
             for (int j = 0; j < hitung_layanan; j++) {
                 if (jenis_layanan[i] == nama_layanan[j]) {
                     pendapatan += harga_layanan[j] * berat_cucian[i];
@@ -659,7 +659,7 @@ void hitungPendapatanPerHari() {
     }
 
     if (pesananDitemukan) {
-        // Store the revenue data
+        // Mengumpulkan data per tanggal
         tanggal_pendapatan[hitung_pendapatan] = tanggal;
         total_pendapatan[hitung_pendapatan] = pendapatan;
         hitung_pendapatan++;
@@ -687,16 +687,15 @@ void hitungPendapatanPerBulan() {
     double pendapatan = 0;
     bool pesananDitemukan = false;
 
-    // Iterate through all orders
+    // Iterasi seluruh pesanan
     for (int i = 0; i < hitung_pesanan; i++) {
-        // Extract month and year from tanggal_masuk
-        // Assuming format DD/MM/YYYY, we take substring from index 3
+        // Mengekstrak bulan dan tahun dari variabel tanggal_masuk 
         string orderBulanTahun = tanggal_masuk[i].substr(3);
         
         if (orderBulanTahun == bulanTahun && 
             (status_pesanan[i] == "Selesai" || status_pesanan[i] == "Diambil")) {
             
-            // Find the service price for this order
+            // Mencari harga pelayanan untuk pesanan
             for (int j = 0; j < hitung_layanan; j++) {
                 if (jenis_layanan[i] == nama_layanan[j]) {
                     pendapatan += harga_layanan[j] * berat_cucian[i];
@@ -779,7 +778,7 @@ void menuAdmin(){
             manajemenProses();
         }
 
-        else if(admin_menu == 4){  // New option for revenue management
+        else if(admin_menu == 4){  
             manajemenPendapatan();
         }
     }
