@@ -351,7 +351,7 @@ void tambahPesanan(){
             return;
         }
     cout << "Nomor Pesanan: " << kode << endl;
-    cout << "Tanggal Masuk: ";
+    cout << "Tanggal Masuk (Tanggal/Bulan/Tahun): ";
     cin.ignore();
     getline(cin, tanggal_masuk[hitung_pesanan]);
     memilihJenisLayanan();
@@ -621,6 +621,131 @@ void manajemenProses(){
     }
 }
 
+// Deklarasi variabel manajemen pendapatan
+double total_pendapatan[MAX];
+string tanggal_pendapatan[MAX];
+int hitung_pendapatan = 0;
+
+// Fungsi untuk manajemen pendapatan berdasarkan periode tertentu
+void hitungPendapatanPerHari() {
+    if (hitung_pesanan == 0) {
+        cout << "Tidak ada pesanan untuk dihitung.\n";
+        cout << "================================" << endl;
+        return;
+    }
+
+    cout << "Masukkan tanggal (Tanggal/Bulan/Tahun): ";
+    string tanggal;
+    cin.ignore();
+    getline(cin, tanggal);
+
+    double pendapatan = 0;
+    bool pesananDitemukan = false;
+
+    // Iterasi seluruh pesanan
+    for (int i = 0; i < hitung_pesanan; i++) {
+        if (tanggal_masuk[i] == tanggal && 
+            (status_pesanan[i] == "Selesai" || status_pesanan[i] == "Diambil")) {
+            
+            // Menemukan harga layanan pada pesananan
+            for (int j = 0; j < hitung_layanan; j++) {
+                if (jenis_layanan[i] == nama_layanan[j]) {
+                    pendapatan += harga_layanan[j] * berat_cucian[i];
+                    pesananDitemukan = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (pesananDitemukan) {
+        // Mengumpulkan data per tanggal
+        tanggal_pendapatan[hitung_pendapatan] = tanggal;
+        total_pendapatan[hitung_pendapatan] = pendapatan;
+        hitung_pendapatan++;
+
+        cout << "Total pendapatan untuk tanggal " << tanggal << ": Rp. " << pendapatan << endl;
+    } else {
+        cout << "Tidak ada pesanan selesai atau diambil untuk tanggal tersebut.\n";
+    }
+    cout << "================================" << endl;
+}
+
+// Fungsi untuk menghitung pendapatan per bulan
+void hitungPendapatanPerBulan() {
+    if (hitung_pesanan == 0) {
+        cout << "Tidak ada pesanan untuk dihitung.\n";
+        cout << "================================" << endl;
+        return;
+    }
+
+    cout << "Masukkan bulan dan tahun (Bulan/Tahun): " << endl;
+    string bulanTahun;
+    cin.ignore();
+    getline(cin, bulanTahun);
+
+    double pendapatan = 0;
+    bool pesananDitemukan = false;
+
+    // Iterasi seluruh pesanan
+    for (int i = 0; i < hitung_pesanan; i++) {
+        // Mengekstrak bulan dan tahun dari variabel tanggal_masuk 
+        string orderBulanTahun = tanggal_masuk[i].substr(3);
+        
+        if (orderBulanTahun == bulanTahun && 
+            (status_pesanan[i] == "Selesai" || status_pesanan[i] == "Diambil")) {
+            
+            // Mencari harga pelayanan untuk pesanan
+            for (int j = 0; j < hitung_layanan; j++) {
+                if (jenis_layanan[i] == nama_layanan[j]) {
+                    pendapatan += harga_layanan[j] * berat_cucian[i];
+                    pesananDitemukan = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (pesananDitemukan) {
+        cout << "Total pendapatan untuk bulan " << bulanTahun << ": Rp. " << pendapatan << endl;
+    } else {
+        cout << "Tidak ada pesanan selesai atau diambil untuk bulan tersebut.\n";
+    }
+    cout << "================================" << endl;
+}
+
+// Menu manajemen pendapatan
+void manajemenPendapatan() {
+    while (true) {
+        cout << "Manajemen Pendapatan" << endl;
+        cout << "--------------------------------" << endl;
+        cout << "1. Hitung Pendapatan per Hari" << endl;
+        cout << "2. Hitung Pendapatan per Bulan" << endl;
+        cout << "3. Kembali" << endl;
+        cout << "--------------------------------" << endl;
+        cout << "Pilih Aksi: ";
+        int pendapatan_action;
+        cin >> pendapatan_action;
+        cout << "================================" << endl;
+
+        if (pendapatan_action == 3) {
+            break;
+        }
+
+        switch (pendapatan_action) {
+            case 1:
+                hitungPendapatanPerHari();
+                break;
+            case 2:
+                hitungPendapatanPerBulan();
+                break;
+            default:
+                cout << "Pilihan tidak valid!\n";
+                cout << "================================" << endl;
+        }
+    }
+}
+
 //menu ketika memilih Admin pada Menu Utama
 void menuAdmin(){
     while (true)
@@ -629,14 +754,15 @@ void menuAdmin(){
         cout << "1. Manajemen Layanan" << endl;
         cout << "2. Manajemen Pesanan" << endl;
         cout << "3. Manajemen Proses" << endl;
-        cout << "4. Kembali ke Menu Utama" << endl;
+        cout << "4. Manajemen Pendapatan" << endl;  // New option
+        cout << "5. Kembali ke Menu Utama" << endl;  // Moved to option 5
         cout << "--------------------------------" << endl;
         cout << "Pilih Menu: ";
         int admin_menu;
         cin >> admin_menu;
         cout << "================================" << endl;
 
-        if(admin_menu == 4){
+        if(admin_menu == 5){  // Changed from 4 to 5
             break;
         }
 
@@ -650,6 +776,10 @@ void menuAdmin(){
 
         else if(admin_menu == 3){
             manajemenProses();
+        }
+
+        else if(admin_menu == 4){  
+            manajemenPendapatan();
         }
     }
 }
