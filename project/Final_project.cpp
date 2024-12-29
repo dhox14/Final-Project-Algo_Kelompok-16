@@ -172,6 +172,52 @@ void ubahLayanan(){
 
 }
 
+void hapusLayanan() {
+    if (hitung_layanan == 0) {
+        cout << "Tidak ada layanan yang tersedia untuk dihapus." << endl;
+        cout << "================================" << endl;
+        return;
+    }
+
+    cout << "Masukkan kode layanan yang ingin dihapus: ";
+    string kode;
+    cin >> kode;
+
+    // Cari indeks layanan yang akan dihapus
+    int index = -1;
+    for (int i = 0; i < hitung_layanan; i++) {
+        if (kode_layanan[i] == kode) {
+            index = i;
+            break;
+        }
+    }
+
+    if (index == -1) {
+        cout << "Layanan dengan kode " << kode << " tidak ditemukan." << endl;
+        cout << "================================" << endl;
+        return;
+    }
+
+    // Geser data ke kiri untuk menghapus elemen
+    for (int i = index; i < hitung_layanan - 1; i++) {
+        kode_layanan[i] = kode_layanan[i + 1];
+        nama_layanan[i] = nama_layanan[i + 1];
+        harga_layanan[i] = harga_layanan[i + 1];
+        estimasi_layanan[i] = estimasi_layanan[i + 1];
+    }
+
+    // Kurangi jumlah layanan
+    hitung_layanan--;
+
+    // Perbarui kode layanan agar tetap berurutan
+    for (int i = 0; i < hitung_layanan; i++) {
+        kode_layanan[i] = automasiKodeLayanan(i);
+    }
+
+    cout << "Layanan berhasil dihapus dan kode layanan diperbarui." << endl;
+    cout << "================================" << endl;
+}
+
 //menu ketika memilih Manajemen Layanan pada Menu Admin
 void manajemenLayanan(){
     while (true)
@@ -180,28 +226,28 @@ void manajemenLayanan(){
         cout << "1. Tambah Layanan" << endl;
         cout << "2. Lihat Layanan" << endl;
         cout << "3. Ubah Layanan" << endl;
-        cout << "4. Kembali" << endl;
+        cout << "4. Hapus Layanan" << endl;
+        cout << "5. Kembali" << endl;
         cout << "--------------------------------" << endl;
         cout << "Pilih Aksi: ";
         int layanan_action;
         cin >> layanan_action;
         cout << "================================" << endl;
 
-        if(layanan_action == 4){
+        if(layanan_action == 5){
             break;
         }
 
-        if(layanan_action == 1){
-            tambahLayanan();                
-        }
-
-        else if(layanan_action == 2){
+        if (layanan_action == 1) {
+            tambahLayanan();
+        } else if (layanan_action == 2) {
             lihatLayanan();
-                
-        }
-
-        else if(layanan_action == 3){
+        } else if (layanan_action == 3) {
             ubahLayanan();
+        } else if (layanan_action == 4) { // Panggil fungsi hapus layanan
+            hapusLayanan();
+        } else {
+            cout << "Pilihan tidak valid!" << endl;
         }
     }
 }
@@ -245,6 +291,19 @@ void memilihJenisLayanan(){
             cout << "--------------------------------" << endl;
         }
     }
+}
+
+void filterBeratCucian(){
+     while (true) {
+        cout << "Berat Cucian (kg): ";
+        cin >> berat_cucian[hitung_pesanan];
+        if (berat_cucian[hitung_pesanan] > 0) {
+            break;
+        }
+        cout << "Berat cucian harus berupa angka positif. Silakan coba lagi." << endl;
+        cout << "--------------------------------" << endl;
+    }
+
 }
 
 void memilihStatusPesanan(){
@@ -296,8 +355,7 @@ void tambahPesanan(){
     cin.ignore();
     getline(cin, tanggal_masuk[hitung_pesanan]);
     memilihJenisLayanan();
-    cout << "Berat Cucian: ";
-    cin >> berat_cucian[hitung_pesanan];
+    filterBeratCucian();
     memilihStatusPesanan();
     hitung_pesanan++;
     cout << "Pesanan berhasil ditambahkan!" << endl;
@@ -318,6 +376,25 @@ void semuaPesanan(){
     cout << "================================" << endl;
     return;
 }
+
+void tampilkanPesananBerdasarkanStatus(const string& status) {
+    bool found = false; // Indikator jika ada data ditemukan
+    for (int i = 0; i < hitung_pesanan; i++) {
+        if (status_pesanan[i] == status) {
+            cout << "Kode: " << kode_pesanan[i]
+                 << ", Tanggal Masuk: " << tanggal_masuk[i]
+                 << ", Jenis Layanan: " << jenis_layanan[i]
+                 << ", Berat Cucian: " << berat_cucian[i] << " kg"
+                 << ", Status Pesanan: " << status_pesanan[i] << endl;
+            found = true; // Tandai bahwa ada data ditemukan
+        }
+    }
+    if (!found) {
+        cout << "Tidak ada pesanan dengan status " << status << "." << endl;
+    }
+    cout << "================================" << endl;
+}
+
 //menu untuk melihat pesanan perstatus
 void pesananPerStatus(){
     int pilih;
@@ -330,72 +407,22 @@ void pesananPerStatus(){
     cin >> pilih;
     cout << "--------------------------------" << endl;
 
-    if(pilih == 1){
-        bool found = false; // Tambahkan indikator untuk mengecek jika ada data ditemukan
-        for (int i = 0; i < hitung_pesanan; i++) {
-            if(status_pesanan[i] == "Diterima"){
-                cout << "Kode: " << kode_pesanan[i]
-                     << ", Tanggal Masuk: " << tanggal_masuk[i]
-                     << ", Jenis Layanan: " << jenis_layanan[i]
-                     << ", Berat Cucian: " << berat_cucian[i] << " kg"
-                     << ", Status Pesanan: " << status_pesanan[i] << endl;
-                found = true; // Tandai bahwa ada data ditemukan
-            }
-        }
-        if (!found) { // Jika tidak ada data ditemukan
-            cout << "Tidak ada pesanan dengan status Diterima." << endl;
-        }
-        cout << "================================" << endl;
-    } else if(pilih == 2){
-        bool found = false;
-        for (int i = 0; i < hitung_pesanan; i++) {
-            if(status_pesanan[i] == "Dikerjakan"){
-                cout << "Kode: " << kode_pesanan[i]
-                     << ", Tanggal Masuk: " << tanggal_masuk[i]
-                     << ", Jenis Layanan: " << jenis_layanan[i]
-                     << ", Berat Cucian: " << berat_cucian[i] << " kg"
-                     << ", Status Pesanan: " << status_pesanan[i] << endl;
-                found = true;
-            }
-        }
-        if (!found) {
-            cout << "Tidak ada pesanan dengan status Dikerjakan." << endl;
-        }
-        cout << "================================" << endl;
-    } else if(pilih == 3){
-        bool found = false;
-        for (int i = 0; i < hitung_pesanan; i++) {
-            if(status_pesanan[i] == "Selesai"){
-                cout << "Kode: " << kode_pesanan[i]
-                     << ", Tanggal Masuk: " << tanggal_masuk[i]
-                     << ", Jenis Layanan: " << jenis_layanan[i]
-                     << ", Berat Cucian: " << berat_cucian[i] << " kg"
-                     << ", Status Pesanan: " << status_pesanan[i] << endl;
-                found = true;
-            }
-        }
-        if (!found) {
-            cout << "Tidak ada pesanan dengan status Selesai." << endl;
-        }
-        cout << "================================" << endl;
-    } else if(pilih == 4){
-        bool found = false;
-        for (int i = 0; i < hitung_pesanan; i++) {
-            if(status_pesanan[i] == "Diambil"){
-                cout << "Kode: " << kode_pesanan[i]
-                     << ", Tanggal Masuk: " << tanggal_masuk[i]
-                     << ", Jenis Layanan: " << jenis_layanan[i]
-                     << ", Berat Cucian: " << berat_cucian[i] << " kg"
-                     << ", Status Pesanan: " << status_pesanan[i] << endl;
-                found = true;
-            }
-        }
-        if (!found) {
-            cout << "Tidak ada pesanan dengan status Diambil." << endl;
-        }
-        cout << "================================" << endl;
-    } else {
-        cout << "Pilihan tidak valid." << endl;
+    switch (pilih) {
+        case 1:
+            tampilkanPesananBerdasarkanStatus("Diterima");
+            break;
+        case 2:
+            tampilkanPesananBerdasarkanStatus("Dikerjakan");
+            break;
+        case 3:
+            tampilkanPesananBerdasarkanStatus("Selesai");
+            break;
+        case 4:
+            tampilkanPesananBerdasarkanStatus("Diambil");
+            break;
+        default:
+            cout << "Pilihan tidak valid." << endl;
+            cout << "================================" << endl;
     }
 }
 
