@@ -406,6 +406,20 @@ void memilihStatusPesanan()
   }
 }
 
+// Fungsi baru untuk validasi kode unik
+bool isKodePesananUnik(const string &kode)
+{
+  // Cek apakah kode sudah ada dalam daftar
+  for (int i = 0; i < hitung_pesanan; i++)
+  {
+    if (kode_pesanan[i] == kode)
+    {
+      return false; // Kode ditemukan, berarti tidak unik
+    }
+  }
+  return true; // Kode tidak ditemukan, berarti unik
+}
+
 // menu ketika memilih Tambah Pesanan pada Menu Manajemen Pesanan
 void tambahPesanan()
 {
@@ -414,8 +428,16 @@ void tambahPesanan()
     cout << "Pesanan anda sudah penuh!" << endl;
     return;
   }
-  string kode = automasiKodePesanan(hitung_pesanan);
+
+  string kode;
+  do
+  {
+    // Generate kode baru hingga menemukan kode unik
+    kode = automasiKodePesanan(hitung_pesanan);
+  } while (!isKodePesananUnik(kode)); // <-- Ditambahkan validasi dengan fungsi isKodePesananUnik
+  
   kode_pesanan[hitung_pesanan] = kode;
+
   if (hitung_layanan == 0)
   {
     cout << "Jenis Layanan Belum Diinput" << endl;
@@ -433,6 +455,7 @@ void tambahPesanan()
   cout << "Pesanan berhasil ditambahkan!" << endl;
   cout << dividerEqual << endl;
 }
+
 // menu untuk melihat semua pesanan
 void semuaPesanan()
 {
@@ -922,7 +945,8 @@ void antrianPekerjaan()
   {
     if (status_pesanan[i] == "Diterima")
     {
-      cout << "Kode: " << kode_pesanan[i] << endl;
+      cout << "Kode: " << kode_pesanan[i]
+            << ", Estimasi: " << estimasi_layanan[i] << " hari" << endl; // <-- Tampilkan estimasi waktu pengerjaan
     }
   }
   cout << dividerEqual << endl;
@@ -940,6 +964,7 @@ void detailPesananYangPerluDikerjakan()
            << ", Tanggal Masuk: " << tanggal_masuk[i]
            << ", Jenis Layanan: " << jenis_layanan[i]
            << ", Berat Cucian: " << berat_cucian[i] << " kg"
+           << ", Estimasi: " << estimasi_layanan[i] << " hari" // <-- Tampilkan estimasi waktu pengerjaan
            << ", Status Pesanan: " << status_pesanan[i] << endl;
     }
   }
@@ -1130,9 +1155,39 @@ void pencatatanPesanan()
   }
 }
 
+// Fungsi untuk menampilkan notifikasi pesanan mendekati batas waktu pengerjaan
+void notifikasiPesananMendekatiTenggat()
+{
+  bool adaNotifikasi = false;
+  cout << "========================================" << endl;
+  cout << "[NOTIFIKASI] Pesanan Mendekati Tenggat Waktu!" << endl;
+  cout << "========================================" << endl;
+
+  for (int i = 0; i < hitung_pesanan; i++)
+  {
+    // Cek status dan estimasi waktu pengerjaan
+    if (status_pesanan[i] == "Dikerjakan" && estimasi_layanan[i] == 1)
+    {
+      cout << "Kode: " << kode_pesanan[i]
+           << ", Jenis Layanan: " << jenis_layanan[i]
+           << ", Estimasi: " << estimasi_layanan[i] << " hari" << endl;
+      adaNotifikasi = true;
+    }
+  }
+
+  if (!adaNotifikasi)
+  {
+    cout << "Tidak ada pesanan mendekati tenggat waktu." << endl;
+  }
+    cout << "----------------------------------------" << endl;
+}
+
 // menu ketika memilih Staff pada Menu Utama
 void menuStaff()
 {
+  // Tampilkan notifikasi saat login sebagai Staff
+  notifikasiPesananMendekatiTenggat();
+
   while (true)
   {
     cout << "Anda masuk sebagai Staff" << endl;
