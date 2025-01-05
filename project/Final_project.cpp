@@ -10,6 +10,7 @@ using namespace Const;
 
 // deklarasi variabel penambahan layanan
 const int MAX = 100;
+const int MAX_HISTORY = 15;
 string kode_layanan[MAX];
 string nama_layanan[MAX];
 int harga_layanan[MAX];
@@ -33,6 +34,45 @@ string automasiKodeLayanan(int count)
   {
     return "L" + to_string(count); // Misalnya: L100
   }
+}
+
+// Check Tahun Kabisat
+bool checkTahunKabisat(int tahun)
+{
+  return (tahun % 4 == 0 && (tahun % 100 != 0 || tahun % 400 == 0));
+}
+
+// fungsi Validasi tanggal
+bool validasiTanggalInput(int hari, int bulan, int tahun)
+{
+  if (bulan < 1 || bulan > 12)
+  {
+    return false;
+  }
+
+  int hariDalamBulan[] = {31, (checkTahunKabisat(tahun) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+  if (hari < 1 || hari > hariDalamBulan[bulan - 1])
+  {
+    return false;
+  }
+
+  return true;
+}
+
+bool validasiJamMenit(int jam, int menit)
+{
+  if (jam < 0 || jam > 23)
+  {
+    return false;
+  }
+
+  if (menit < 0 || menit > 59)
+  {
+    return false;
+  }
+
+  return true;
 }
 
 // menu ketika memilih Tambah Layanan pada Menu Manajemen Layanan
@@ -305,6 +345,22 @@ int berat_cucian[MAX];
 string status_pesanan[MAX];
 int hitung_pesanan = 0;
 
+string history_status[MAX][MAX_HISTORY];
+string tanggal_status[MAX][MAX_HISTORY];
+
+int cariPesananBerdasarkanKode(string kode)
+{
+  for (int i = 0; i < hitung_pesanan; i++)
+  {
+    if (kode_pesanan[i] == kode)
+    {
+      return i;
+    }
+  }
+  return -1;
+  // identifikasi bila tidak ditemukan;
+}
+
 string automasiKodePesanan(int count)
 {
   count += 1;
@@ -321,6 +377,35 @@ string automasiKodePesanan(int count)
   {
     return "NP" + to_string(count); // Misalnya: L100
   }
+}
+
+bool updateHistoryStatus(int i, string status_baru, string tanggaldiperbarui)
+{
+  int j = 0;
+
+  while (j < MAX_HISTORY && history_status[i][j] != "")
+  {
+    j++;
+  }
+
+  if (j < MAX_HISTORY)
+  {
+    history_status[i][j] = status_baru;
+    tanggal_status[i][j] = tanggaldiperbarui;
+  }
+  else
+  {
+    for (int k = 1; k < MAX_HISTORY; k++)
+    {
+      history_status[i][k - 1] = history_status[i][k];
+      tanggal_status[i][k - 1] = tanggal_status[i][k];
+    }
+
+    history_status[i][MAX_HISTORY - 1] = status_baru;
+    tanggal_status[i][MAX_HISTORY - 1] = tanggaldiperbarui;
+  }
+
+  return true;
 }
 
 // automasi daftar layanan yang tersedia untuk dipilih
@@ -365,7 +450,7 @@ void filterBeratCucian()
   }
 }
 
-void memilihStatusPesanan()
+void memilihStatusPesanan(int i, string tanggal)
 {
   int pilihan;
   while (true)
@@ -381,21 +466,25 @@ void memilihStatusPesanan()
     if (pilihan == 1)
     {
       status_pesanan[hitung_pesanan] = "Diterima";
+      updateHistoryStatus(i, "Diterima", tanggal);
       break;
     }
     else if (pilihan == 2)
     {
       status_pesanan[hitung_pesanan] = "Dikerjakan";
+      updateHistoryStatus(i, "Dikerjakan", tanggal);
       break;
     }
     else if (pilihan == 3)
     {
       status_pesanan[hitung_pesanan] = "Selesai";
+      updateHistoryStatus(i, "Selesai", tanggal);
       break;
     }
     else if (pilihan == 4)
     {
       status_pesanan[hitung_pesanan] = "Diambil";
+      updateHistoryStatus(i, "Diambil", tanggal);
       break;
     }
     else
@@ -435,7 +524,7 @@ void tambahPesanan()
     // Generate kode baru hingga menemukan kode unik
     kode = automasiKodePesanan(hitung_pesanan);
   } while (!isKodePesananUnik(kode)); // <-- Ditambahkan validasi dengan fungsi isKodePesananUnik
-  
+
   kode_pesanan[hitung_pesanan] = kode;
 
   if (hitung_layanan == 0)
@@ -445,12 +534,27 @@ void tambahPesanan()
     return;
   }
   cout << "Nomor Pesanan: " << kode << endl;
-  cout << "Tanggal Masuk (Tanggal/Bulan/Tahun): ";
-  cin.ignore();
-  getline(cin, tanggal_masuk[hitung_pesanan]);
-  memilihJenisLayanan();
+
+  char delimiter;
+
+  int hari, bulan, tahun;
+  do
+  {
+    cout << "Tanggal Masuk (Tanggal/Bulan/Tahun): ";
+    cin >> hari >> delimiter >> bulan >> delimiter >> tahun;
+
+    if (!validasiTanggalInput(hari, bulan, tahun))
+    {
+      cout << "Tanggal tidak valid! Silakan coba lagi." << endl;
+      cin.ignore();
+    }
+  } while (!validasiTanggalInput(hari, bulan, tahun));
+  string tanggal = to_string(hari) + '/' + to_string(bulan) + '/' + to_string(tahun);
+  tanggal_masuk[hitung_pesanan] = tanggal;
+
+  memilihJenisLayanan(); //
   filterBeratCucian();
-  memilihStatusPesanan();
+  memilihStatusPesanan(hitung_pesanan, tanggal);
   hitung_pesanan++;
   cout << "Pesanan berhasil ditambahkan!" << endl;
   cout << dividerEqual << endl;
@@ -603,6 +707,28 @@ void manajemenPesanan()
   }
 }
 
+void lihatHistoryStatus(string kode_pesanan_input)
+{
+  int index = cariPesananBerdasarkanKode(kode_pesanan_input);
+  if (index == -1)
+  {
+    cout << "Pesanan dengan kode " << kode_pesanan_input << " tidak ditemukan!" << endl;
+    cout << dividerEqual << endl;
+  }
+  else
+  {
+    cout << "History status pesanan " << kode_pesanan_input << ":" << endl;
+    for (int j = 0; j < MAX_HISTORY; j++)
+    {
+      if (history_status[index][j] != "")
+      {
+        cout << history_status[index][j] << " - " << tanggal_status[index][j] << endl;
+      }
+    }
+    cout << dividerEqual << endl;
+  }
+}
+
 void ubahStatusPesanan()
 {
   if (hitung_pesanan == 0)
@@ -617,17 +743,14 @@ void ubahStatusPesanan()
   string kode;
   cin >> kode;
   cout << dividerHyphen << endl;
+  char delimiter;
 
-  // Cari layanan berdasarkan kode
-  int index = -1;
-  for (int i = 0; i < hitung_pesanan; i++)
-  {
-    if (kode_pesanan[i] == kode)
-    {
-      index = i;
-      break;
-    }
-  }
+  int hari, bulan, tahun;
+
+  int index = cariPesananBerdasarkanKode(kode);
+
+  tanggal_masuk[hitung_pesanan] = to_string(hari) + '/' + to_string(bulan) + '/' + to_string(tahun);
+  cout << dividerHyphen << endl;
 
   if (index == -1)
   {
@@ -635,8 +758,8 @@ void ubahStatusPesanan()
     cout << dividerEqual << endl;
     return;
   }
-
-  cout << "Detail Pesanan saat ini:" << endl;
+  cout
+      << "Detail Pesanan saat ini:" << endl;
   cout << "Kode: " << kode_pesanan[index]
        << ", Tanggal Masuk: " << tanggal_masuk[index]
        << ", Jenis Layanan: " << jenis_layanan[index]
@@ -657,6 +780,20 @@ void ubahStatusPesanan()
   int opsi;
   cout << "Perbarui Status Pesanan: " << endl;
 
+  do
+  {
+    cout << "Tanggal Ubah Status (Tanggal/Bulan/Tahun): ";
+    cin >> hari >> delimiter >> bulan >> delimiter >> tahun;
+
+    if (!validasiTanggalInput(hari, bulan, tahun))
+    {
+      cout << "Tanggal tidak valid! Silakan coba lagi." << endl;
+      cin.ignore();
+    }
+  } while (!validasiTanggalInput(hari, bulan, tahun));
+
+  string tanggalUpdate = to_string(hari) + '/' + to_string(bulan) + '/' + to_string(tahun);
+
   switch (current_status[0])
   {         // Using first character for switch
   case 'D': // "Diterima"
@@ -671,7 +808,11 @@ void ubahStatusPesanan()
       {
       case 2:
         status_pesanan[index] = "Dikerjakan";
-        cout << "Status pesanan berhasil diperbarui menjadi 'Dikerjakan'!" << endl;
+
+        updateHistoryStatus(index, "Dikerjakan", tanggalUpdate);
+
+        cout
+            << "Status pesanan berhasil diperbarui menjadi 'Dikerjakan'!" << endl;
         break;
       default:
         cout << "Opsi tidak valid! Status hanya dapat diubah ke 'Dikerjakan'." << endl;
@@ -688,6 +829,7 @@ void ubahStatusPesanan()
       {
       case 3:
         status_pesanan[index] = "Selesai";
+        updateHistoryStatus(index, "Selesai", tanggalUpdate);
         cout << "Status pesanan berhasil diperbarui menjadi 'Selesai'!" << endl;
         break;
       default:
@@ -706,6 +848,7 @@ void ubahStatusPesanan()
     {
     case 4:
       status_pesanan[index] = "Diambil";
+      updateHistoryStatus(index, "Diambil", tanggalUpdate);
       cout << "Status pesanan berhasil diperbarui menjadi 'Diambil'!" << endl;
       break;
     default:
@@ -720,6 +863,15 @@ void ubahStatusPesanan()
   cout << dividerEqual << endl;
 }
 
+void menuLihatHistoryStatus()
+{
+  cout << "Masukkan kode pesanan untuk melihat history status: ";
+  string kode;
+  cin >> kode;
+  lihatHistoryStatus(kode);
+  return;
+}
+
 // menu ketika memilih Manajemen Proses pada Menu Admin
 void manajemenProses()
 {
@@ -728,16 +880,21 @@ void manajemenProses()
     cout << "Manajemen Proses" << endl;
     cout << dividerHyphen << endl;
     cout << "1. Ubah Status Pesanan" << endl;
-    cout << "2. Kembali" << endl;
+    cout << "2. Lihat History Status Pesanan" << endl;
+    cout << "3. Kembali" << endl;
     cout << dividerHyphen << endl;
     cout << "Pilih Aksi: ";
     int proses_action;
     cin >> proses_action;
     cout << dividerEqual << endl;
 
-    if (proses_action == 2)
+    if (proses_action == 3)
     {
       break;
+    }
+    if (proses_action == 2)
+    {
+      menuLihatHistoryStatus();
     }
     if (proses_action == 1)
     {
@@ -946,7 +1103,7 @@ void antrianPekerjaan()
     if (status_pesanan[i] == "Diterima")
     {
       cout << "Kode: " << kode_pesanan[i]
-            << ", Estimasi: " << estimasi_layanan[i] << " hari" << endl; // <-- Tampilkan estimasi waktu pengerjaan
+           << ", Estimasi: " << estimasi_layanan[i] << " hari" << endl; // <-- Tampilkan estimasi waktu pengerjaan
     }
   }
   cout << dividerEqual << endl;
@@ -1025,15 +1182,18 @@ void cetakNota()
   cin >> kode;
   cout << dividerHyphen << endl;
   // Cari pesanan berdasarkan kode
-  int index = -1;
-  for (int i = 0; i < hitung_pesanan; i++)
-  {
-    if (kode_pesanan[i] == kode)
-    {
-      index = i;
-      break;
-    }
-  }
+
+  int index = cariPesananBerdasarkanKode(kode);
+
+  // int index = -1;
+  // for (int i = 0; i < hitung_pesanan; i++)
+  // {
+  //   if (kode_pesanan[i] == kode)
+  //   {
+  //     index = i;
+  //     break;
+  //   }
+  // }
 
   if (index == -1)
   {
@@ -1091,15 +1251,7 @@ void mencariPesananBerdasarkanNomor()
   cout << dividerHyphen << endl;
 
   // Cari pesanan berdasarkan kode
-  int index = -1;
-  for (int i = 0; i < hitung_pesanan; i++)
-  {
-    if (kode_pesanan[i] == kode)
-    {
-      index = i;
-      break;
-    }
-  }
+  int index = cariPesananBerdasarkanKode(kode);
 
   if (index == -1)
   {
@@ -1179,7 +1331,7 @@ void notifikasiPesananMendekatiTenggat()
   {
     cout << "Tidak ada pesanan mendekati tenggat waktu." << endl;
   }
-    cout << "----------------------------------------" << endl;
+  cout << "----------------------------------------" << endl;
 }
 
 // menu ketika memilih Staff pada Menu Utama
