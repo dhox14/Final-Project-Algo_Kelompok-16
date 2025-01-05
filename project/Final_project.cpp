@@ -1,8 +1,10 @@
 #include <cmath>
 #include <cstdio>
-#include <vector>
 #include <iostream>
 #include <algorithm>
+#include <map>
+#include <utility>
+
 #include "utility/include/Const.h"
 
 using namespace std;
@@ -291,6 +293,39 @@ void hapusLayanan()
   cout << dividerEqual << endl;
 }
 
+// Fungsi untuk menghitung rata-rata waktu pengerjaan per jenis layanan
+void hitungRataRataWaktuPengerjaan()
+{
+  if (hitung_layanan == 0)
+  {
+    cout << "Tidak ada layanan yang tersedia untuk menghitung rata-rata." << endl;
+    cout << "================================" << endl;
+    return;
+  }
+
+  // Menggunakan map untuk menyimpan total waktu dan jumlah layanan per jenis
+  map<string, pair<int, int>> waktuPengerjaan; // <Nama Layanan, <Total Waktu, Jumlah Layanan>>
+
+  for (int i = 0; i < hitung_layanan; i++)
+  {
+    waktuPengerjaan[nama_layanan[i]].first += estimasi_layanan[i]; // Total waktu
+    waktuPengerjaan[nama_layanan[i]].second += 1;                  // Jumlah layanan
+  }
+
+  cout << "Rata-rata Waktu Pengerjaan per Jenis Layanan:" << endl;
+  for (const auto &entry : waktuPengerjaan)
+  {
+    string namaLayanan = entry.first;
+    int totalWaktu = entry.second.first;
+    int jumlahLayanan = entry.second.second;
+    double rataRata = static_cast<double>(totalWaktu) / jumlahLayanan;
+
+    cout << "Jenis Layanan: " << namaLayanan
+         << ", Rata-rata Waktu Pengerjaan: " << rataRata << " hari" << endl;
+  }
+  cout << "================================" << endl;
+}
+
 // menu ketika memilih Manajemen Layanan pada Menu Admin
 void manajemenLayanan()
 {
@@ -302,14 +337,15 @@ void manajemenLayanan()
     cout << "2. Lihat Layanan" << endl;
     cout << "3. Ubah Layanan" << endl;
     cout << "4. Hapus Layanan" << endl;
-    cout << "5. Kembali" << endl;
+    cout << "5. Hitung rata-rata waktu pengerjaan" << endl;
+    cout << "6. Kembali" << endl;
     cout << dividerHyphen << endl;
     cout << "Pilih Aksi: ";
     int layanan_action;
     cin >> layanan_action;
     cout << dividerEqual << endl;
 
-    if (layanan_action == 5)
+    if (layanan_action == 6)
     {
       break;
     }
@@ -329,6 +365,10 @@ void manajemenLayanan()
     else if (layanan_action == 4)
     { // Panggil fungsi hapus layanan
       hapusLayanan();
+    }
+    else if (layanan_action == 5)
+    { // Panggil fungsi hapus layanan
+      hitungRataRataWaktuPengerjaan();
     }
     else
     {
@@ -1053,6 +1093,7 @@ void manajemenPendapatan()
 // menu ketika memilih Admin pada Menu Utama
 void menuAdmin()
 {
+
   while (true)
   {
     cout << "Anda masuk sebagai Admin" << endl;
@@ -1060,8 +1101,8 @@ void menuAdmin()
     cout << "1. Manajemen Layanan" << endl;
     cout << "2. Manajemen Pesanan" << endl;
     cout << "3. Manajemen Proses" << endl;
-    cout << "4. Manajemen Pendapatan" << endl;  // New option
-    cout << "5. Kembali ke Menu Utama" << endl; // Moved to option 5
+    cout << "4. Manajemen Pendapatan" << endl; // New option
+    cout << "5. Logout" << endl;               // Moved to option 5
     cout << dividerHyphen << endl;
     cout << "Pilih Menu: ";
     int admin_menu;
@@ -1070,6 +1111,7 @@ void menuAdmin()
 
     if (admin_menu == 5)
     { // Changed from 4 to 5
+      cout << "Anda telah logout." << endl;
       break;
     }
 
@@ -1346,7 +1388,7 @@ void menuStaff()
     cout << dividerHyphen << endl;
     cout << "1. Manajemen Pekerjaan" << endl;
     cout << "2. Pencatatan" << endl;
-    cout << "3. Kembali ke Menu Utama" << endl;
+    cout << "3. Logout" << endl;
     cout << dividerHyphen << endl;
     cout << "Pilih Menu: ";
     int staff_menu;
@@ -1355,6 +1397,7 @@ void menuStaff()
 
     if (staff_menu == 3)
     {
+      cout << "Anda telah logout." << endl;
       break;
     }
 
